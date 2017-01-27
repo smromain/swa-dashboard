@@ -435,12 +435,12 @@ const fetch = () => {
       returnDateString,
       adultPassengerCount
     })
-    .find("#faresOutbound .product_price")
+    .find("#faresOutbound .product_price, #b0Table span.var.h5")
     .then((priceMarkup) => {
       const price = parsePriceMarkup(priceMarkup)
       fares.outbound.push(price)
     })
-    .find("#faresReturn .product_price")
+    .find("#faresReturn .product_price, #b1Table span.var.h5")
     .then((priceMarkup) => {
       if (isOneWay) return // Only record return prices if it's a two-way flight
       const price = parsePriceMarkup(priceMarkup)
