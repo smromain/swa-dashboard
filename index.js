@@ -46,6 +46,7 @@ var totalDealPrice
 var interval = 30 // In minutes
 var fareType = "DOLLARS"
 var isOneWay = false
+var isInternational = false
 
 // Parse command line options (no validation, sorry!)
 process.argv.forEach((arg, i, argv) => {
@@ -180,7 +181,8 @@ class Dashboard {
           left: 0
         },
         options: Object.assign({}, shared, {
-          label: "Map",
+          label: "Map"
+        }, isInternational ? {} : {
           startLon: 54,
           endLon: 110,
           startLat: 112,
@@ -346,7 +348,24 @@ class Dashboard {
   }
 }
 
+const waypoints = []
+
+// Get lat/lon for airports (no validation on non-existent airports)
+airports.forEach((airport) => {
+  switch (airport.iata) {
+    case originAirport:
+      waypoints.push({ iso: airport.iso, lat: airport.lat, lon: airport.lon, color: "red", char: "X" })
+      break
+    case destinationAirport:
+      waypoints.push({ iso: airport.iso, lat: airport.lat, lon: airport.lon, color: "yellow", char: "X" })
+      break
+  }
+})
+
+isInternational = waypoints.some(w => w.iso !== "US")
+
 const dashboard = new Dashboard()
+waypoints.map(w => dashboard.waypoint(w))
 
 /**
  * Send a text message using Twilio
@@ -533,18 +552,6 @@ const fetch = () => {
     })
 }
 
-// Get lat/lon for airports (no validation on non-existent airports)
-airports.forEach((airport) => {
-  switch (airport.iata) {
-    case originAirport:
-      dashboard.waypoint({ lat: airport.lat, lon: airport.lon, color: "red", char: "X" })
-      break
-    case destinationAirport:
-      dashboard.waypoint({ lat: airport.lat, lon: airport.lon, color: "yellow", char: "X" })
-      break
-  }
-})
-
 dashboard.settings([
   `Origin airport: ${originAirport}`,
   `Destination airport: ${destinationAirport}`,
@@ -552,6 +559,7 @@ dashboard.settings([
   `Outbound time: ${outboundTimeOfDay.toLowerCase()}`,
   !isOneWay && `Return date: ${returnDateString}`,
   !isOneWay && `Return time: ${returnTimeOfDay.toLowerCase()}`,
+  `Flight type: ${isInternational ? "international" : "domestic"}`,
   `Trip type: ${isOneWay ? "one-way" : "two-way"}`,
   `Fare type: ${fareType.toLowerCase()}`,
   `Passengers: ${adultPassengerCount}`,
