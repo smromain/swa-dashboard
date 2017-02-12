@@ -536,7 +536,8 @@ const fetch = () => {
 
         if (!isOneWay) {
           dashboard.log([
-            `Lowest fares for a return flight is currently ${formatPrice([lowestReturnFare, returnFareDiffString].filter(i => i).join(" "))}`
+            `Lowest fares for a return flight is currently ${formatPrice([lowestReturnFare, returnFareDiffString].filter(i => i).join(" "))}`,
+            `Total for both flights is currently ${formatPrice(lowestOutboundFare + lowestReturnFare)}`
           ])
         }
 
