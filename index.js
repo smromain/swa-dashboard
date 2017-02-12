@@ -270,7 +270,7 @@ class Dashboard {
    * @return {Void}
    */
   plot(prices) {
-    const now = format("MM/dd/yy-hh:mm:ss", new Date())
+    const now = format("MM/dd/yy hh:mm:ss", new Date())
     const data = []
 
     Object.assign(this.graphs.outbound, {
@@ -331,7 +331,7 @@ class Dashboard {
    * @return {Void}
    */
   log(messages) {
-    const now = format("MM/dd/yy-hh:mm:ss", new Date())
+    const now = new Date().toISOString()
     messages.forEach((m) => this.widgets.log.log(`${now}: ${m}`))
   }
 
