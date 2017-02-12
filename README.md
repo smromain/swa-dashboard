@@ -38,7 +38,9 @@ swa \
   --passengers 2 \
   --individual-deal-price 50 \ # In dollars or points (optional)
   --total-deal-price 120 \ # In dollars or points (optional)
-  --interval 5 # In minutes (optional)
+  --interval 5 \ # In minutes (optional)
+  --daily-update \ # Send a daily SMS update of prices (optional)
+  --daily-update-at '19:00' # Time to send daily update, default is 18:00/6pm (optional)
 ```
 
 If you would like to look at flights going **one way** between two airports, you can use the `--one-way` flag. This ignores values entered with `--return-date` and `--return-time`, and `--total-deal-price`.
@@ -62,6 +64,11 @@ a deal price threshold, you can set the following environment vars to set up SMS
 deal alerts. _Just be warned: as long as the deal threshold is met, you're going
 to receive SMS messages at the rate of the interval you defined. Better wake up
 and book those tickets!_
+
+When the Twilio environment variables are configured, you can also use the daily
+update flags `--daily-update` and `--daily-update-at` to send you a daily SMS
+message with the current fare prices. The `--daily-update-at` flag is in 24
+hour time format.
 
 ```bash
 export TWILIO_ACCOUNT_SID=""

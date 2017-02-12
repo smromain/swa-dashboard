@@ -17,6 +17,13 @@ const TIME_SEC = TIME_MS * 1000
 const TIME_MIN = TIME_SEC * 60
 const TIME_HOUR = TIME_MIN * 60
 
+
+// Check if Twilio env vars are set
+const isTwilioConfigured = process.env.TWILIO_ACCOUNT_SID &&
+                           process.env.TWILIO_AUTH_TOKEN &&
+                           process.env.TWILIO_PHONE_FROM &&
+                           process.env.TWILIO_PHONE_TO
+
 // Fares
 var prevLowestOutboundFare
 var prevLowestReturnFare
@@ -47,6 +54,9 @@ var interval = 30 // In minutes
 var fareType = "DOLLARS"
 var isOneWay = false
 var isInternational = false
+var dailyUpdate = false
+var dailyUpdateAt = "18:00"
+var dailyUpdateSet
 
 // Parse command line options (no validation, sorry!)
 process.argv.forEach((arg, i, argv) => {
@@ -87,6 +97,12 @@ process.argv.forEach((arg, i, argv) => {
     case "--one-way":
       isOneWay = true
       break
+    case "--daily-update-at":
+      dailyUpdateAt = argv[i + 1]
+      break
+    case "--daily-update":
+      dailyUpdate = isTwilioConfigured
+      break
   }
 })
 
@@ -98,12 +114,6 @@ if (isOneWay) {
   returnTimeOfDay = ""
   totalDealPrice = undefined;
 }
-
-// Check if Twilio env vars are set
-const isTwilioConfigured = process.env.TWILIO_ACCOUNT_SID &&
-                           process.env.TWILIO_AUTH_TOKEN &&
-                           process.env.TWILIO_PHONE_FROM &&
-                           process.env.TWILIO_PHONE_TO
 
 /**
  * Dashboard renderer
@@ -548,6 +558,24 @@ const fetch = () => {
       }
 
       dashboard.render()
+
+      if (dailyUpdate) {
+        const now = new Date()
+        var msTilDailyUpdate = Date.parse(now.toString().replace(/\d{2}:\d{2}/, dailyUpdateAt)) - now
+
+        // Check if update timeframe has already passed and schedule for next day
+        if (msTilDailyUpdate < 0) {
+          msTilDailyUpdate += TIME_HOUR * 24
+        }
+
+        // Schedule a daily update if one hasn't already been scheduled
+        if (dailyUpdateSet == null) {
+          dailyUpdateSet = setTimeout(() => {
+            sendTextMessage(`Daily update: combined total is currently ${formatPrice(lowestOutboundFare + lowestReturnFare)}, individual fares are ${formatPrice(lowestOutboundFare)} (outbound) and ${formatPrice(lowestReturnFare)} (return).`)
+            dailyUpdateSet = null
+          }, msTilDailyUpdate)
+        }
+      }
 
       setTimeout(fetch, interval * TIME_MIN)
     })
