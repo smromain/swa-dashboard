@@ -445,9 +445,6 @@ const parsePriceMarkup = (priceMarkup) => {
  * @return {Void}
  */
 const fetch = () => {
-  const formData = {
-  }
-
   osmosis
     .get("https://www.southwest.com")
     .submit(".booking-form--form", {
@@ -571,7 +568,7 @@ const fetch = () => {
         // Schedule a daily update if one hasn't already been scheduled
         if (dailyUpdateSet == null) {
           dailyUpdateSet = setTimeout(() => {
-            sendTextMessage(`Daily update: combined total is currently ${formatPrice(lowestOutboundFare + lowestReturnFare)}, individual fares are ${formatPrice(lowestOutboundFare)} (outbound) and ${formatPrice(lowestReturnFare)} (return).`)
+            sendTextMessage(`Daily update: combined total is currently ${formatPrice(prevLowestOutboundFare + prevLowestReturnFare)}, individual fares are ${formatPrice(prevLowestOutboundFare)} (outbound) and ${formatPrice(prevLowestReturnFare)} (return).`)
             dailyUpdateSet = null
           }, msTilDailyUpdate)
         }
