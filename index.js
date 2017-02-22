@@ -590,8 +590,8 @@ dashboard.settings([
   `Fare type: ${fareType.toLowerCase()}`,
   `Passengers: ${adultPassengerCount}`,
   `Interval: ${pretty(interval * TIME_MIN)}`,
-  !isOneWay && `Individual deal price: ${individualDealPrice ? `<= ${formatPrice(individualDealPrice)}` : "disabled"}`,
-  `Total deal price: ${totalDealPrice ? `<= ${formatPrice(totalDealPrice)}` : "disabled"}`,
+  isOneWay && `Individual deal price: ${individualDealPrice ? `<= ${formatPrice(individualDealPrice)}` : "disabled"}`,
+  !isOneWay && `Total deal price: ${totalDealPrice ? `<= ${formatPrice(totalDealPrice)}` : "disabled"}`,
   `SMS alerts: ${isTwilioConfigured ? process.env.TWILIO_PHONE_TO : "disabled"}`,
   `Daily update: ${dailyUpdate ? dailyUpdateAt : "disabled"}`
 ].filter(s => s))
